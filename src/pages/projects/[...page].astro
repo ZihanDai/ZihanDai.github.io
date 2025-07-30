@@ -1,0 +1,30 @@
+---
+import ContentList from "../../components/ContentList.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { sortByDate } from "src/lib/util";
+
+export async function getStaticPaths({ paginate }) {
+    const allPosts = sortByDate(await getCollection("projects"));
+    return paginate(allPosts, {
+        pageSize: 4,
+        params: {},
+    });
+}
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title="Projects">
+    <ContentList
+        title="My Projects"
+        items={page.data}
+        contentType="project"
+        pagination={{
+            prev: page.url.prev ? { url: page.url.prev } : null,
+            next: page.url.next ? { url: page.url.next } : null,
+            currentPage: page.currentPage,
+            totalPages: page.totalPages,
+        }}
+    />
+</BaseLayout>

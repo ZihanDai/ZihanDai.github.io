@@ -4,18 +4,70 @@ import BaseLayout from "./BaseLayout.astro";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 
-export interface Props extends BlogSchema {}
+export interface Props extends BlogSchema {
+  contentType: string; // 'blog' or 'project'
+}
 
-const { title, description, pubDate, updatedDate, heroImage, badge, tags = [] } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  coverImage,
+  coverImageHeight = 122,
+  coverImageWidth = 150,
+  contentType, // 'blog' or 'project'
+  badge,
+  tags = [],
+} = Astro.props;
 dayjs.extend(localizedFormat);
-const displayDate = dayjs(pubDate).format("ll")
+const displayDate = dayjs(pubDate).format("ll");
 import { Image } from "astro:assets";
+
+const contentConfig = {
+  blog: {
+    basePath: "/blogs",
+  },
+  project: {
+    basePath: "/projects",
+  },
+};
+
+const config = contentConfig[contentType] || contentConfig.blog;
+
+const createTagUrl = (tag) => {
+  return `${config.basePath}/tag/${tag}`;
+};
 ---
 
-<BaseLayout title={title} description={description} image={heroImage}, ogType="article">
+<BaseLayout
+  title={title}
+  description={description}
+  image={coverImage}
+  ogType="article"
+>
   <main class="md:flex md:justify-center">
     <article class="prose prose-lg max-w-[750px] prose-img:mx-auto">
-      {heroImage && <Image width={750} height={422} format="webp" src={heroImage} alt={title} class="w-full mb-6" />}
+      {
+        coverImage && (
+          <div
+            class="flex-shrink-0 overflow-hidden mx-auto mb-4 flex items-center justify-center"
+            style={{
+              width: `${coverImageWidth}px`,
+              height: `${coverImageHeight}px`,
+            }}
+          >
+            <Image
+              src={coverImage}
+              width={coverImageWidth}
+              height={coverImageHeight}
+              alt={title}
+              class="w-full h-full object-fill rounded-lg"
+            />
+          </div>
+        )
+      }
+
       <h1 class="title my-2 text-4xl font-bold">{title}</h1>
       {pubDate && <time>{displayDate}</time>}
       <br />
@@ -23,7 +75,10 @@ import { Image } from "astro:assets";
       {
         tags &&
           tags.map((tag) => (
-            <a href={`/blog/tag/${tag}`} class="badge badge-outline ml-2 no-underline">
+            <a
+              href={createTagUrl(tag)}
+              class="badge badge-outline ml-2 no-underline"
+            >
               {tag}
             </a>
           ))
@@ -41,3 +96,11 @@ import { Image } from "astro:assets";
     </article>
   </main>
 </BaseLayout>
+
+<style>
+  .flex-shrink-0 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+// src/pages/awards.astro
+import BaseLayout from "../layouts/BaseLayout.astro";
+import * as awardsContent from '../content/awards/awards.md';
+---
+
+<BaseLayout title="Awards - Alice Chueung">
+  <main class="full-width-content">
+    <awardsContent.Content />
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .full-width-content {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .full-width-content h1 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin: 2rem 0 1.5rem;
+    padding: 0 2rem;
+    color: #222;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0.8rem;
+  }
+
+  .full-width-content h2 {
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin: 1.8rem 0 1.2rem;
+    padding: 0 2rem;
+    color: #2c3e50;
+  }
+
+  .full-width-content h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 1.5rem 0 1rem;
+    padding: 0 2rem;
+    color: #34495e;
+  }
+
+  .full-width-content ul {
+    list-style-type: square;
+    padding-left: 3rem;
+    margin: 1rem 0;
+  }
+
+  .full-width-content ul li {
+    padding: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  .full-width-content ul ul {
+    list-style-type: square;
+    padding-left: 2rem;
+    margin: 0.5rem 0;
+  }
+
+  .full-width-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5rem 0;
+  }
+
+  .full-width-content p {
+    padding: 0 2rem;
+    margin: 1rem 0;
+    font-size: 1.1rem;
+  }
+
+  .full-width-content blockquote {
+    border-left: 3px solid #ddd;
+    padding: 0.5rem 1.5rem;
+    margin: 1.5rem 2rem;
+    color: #555;
+    font-style: normal;
+  }
+
+  .full-width-content .date {
+    display: block;
+    padding: 0 2rem;
+    color: #777;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .full-width-content ul {
+      padding-left: 1.8rem;
+    }
+    
+    .full-width-content p,
+    .full-width-content h1,
+    .full-width-content h2,
+    .full-width-content h3 {
+      padding: 0 1.2rem;
+    }
+    
+    .full-width-content h1 {
+      font-size: 1.8rem;
+    }
+    
+    .full-width-content h2 {
+      font-size: 1.5rem;
+    }
+    
+    .full-width-content blockquote {
+      margin: 1.5rem 1.2rem;
+    }
+  }
+</style>

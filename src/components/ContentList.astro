@@ -1,0 +1,144 @@
+---
+import HorizontalCard from "./HorizontalCard.astro";
+import createSlug from "../lib/createSlug";
+
+const {
+    title,
+    items,
+    contentType, // 'blog' or 'project'
+    pagination,
+    showTagHeader = false,
+    currentTag = "",
+} = Astro.props;
+
+const contentConfig = {
+    blog: {
+        basePath: "/blogs",
+        emptyMessage: "No blog posts yet. Check back soon for updates!",
+        imageField: "coverImage",
+        recentText: "Recent posts",
+        olderText: "Older posts",
+        tagHeader: "Blogs tagged with",
+    },
+    project: {
+        basePath: "/projects",
+        emptyMessage: "No projects added yet. More coming soon!",
+        imageField: "coverImage",
+        recentText: "Recent projects",
+        olderText: "Older projects",
+        tagHeader: "Projects tagged with",
+    },
+};
+
+const config = contentConfig[contentType] || contentConfig.blog;
+
+const createItemUrl = (item) => {
+    return `${config.basePath}/${createSlug(item.data.title, item.slug)}`;
+};
+
+const createTagUrl = (tag) => {
+    return `${config.basePath}/tag/${tag}`;
+};
+---
+
+<div class="mb-5">
+    {
+        showTagHeader ? (
+            <div>
+                <h1 class="text-3xl w-full font-bold">{config.tagHeader}</h1>
+                <div class="badge badge-lg badge-primary mt-2">
+                    {currentTag}
+                </div>
+            </div>
+        ) : (
+            <h1 class="text-3xl w-full font-bold">{title}</h1>
+        )
+    }
+</div>
+
+{
+    items.length === 0 ? (
+        <div class="bg-base-200 border-l-4 border-secondary w-full p-4 min-w-full">
+            <p class="font-bold">Sorry!</p>
+            <p>{config.emptyMessage}</p>
+        </div>
+    ) : (
+        <ul>
+            {items.map((item) => (
+                <>
+                    <HorizontalCard
+                        title={item.data.title}
+                        img={"/post_img.webp"}
+                        desc={item.data.description}
+                        url={createItemUrl(item)}
+                        target="_self"
+                        badge={item.data.badge}
+                        tags={item.data.tags}
+                        date={item.data.pubDate || item.data.date}
+                        tagLink={createTagUrl}
+                    />
+                    <div class="divider my-0" />
+                </>
+            ))}
+        </ul>
+    )
+}
+
+{
+    pagination && (
+        <div class="flex justify-between items-center my-8">
+            {pagination.prev ? (
+                <a href={pagination.prev.url} class="btn btn-ghost">
+                    <svg
+                        class="h-6 w-6 fill-current md:h-8 md:w-8"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                    >
+                        <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                    </svg>
+                    {config.recentText}
+                </a>
+            ) : (
+                <div class="invisible">
+                    <span class="btn btn-ghost invisible">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>
+                        {config.recentText}
+                    </span>
+                </div>
+            )}
+
+            {pagination.totalPages > 1 && (
+                <div class="flex items-center space-x-2">
+                    {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(pageNum => (
+                        <a 
+                            href={pageNum === 1 ? config.basePath : `${config.basePath}/${pageNum}`}
+                            class={`btn btn-sm ${pageNum === pagination.currentPage ? 'btn-primary' : 'btn-ghost'}`}
+                        >
+                            {pageNum}
+                        </a>
+                    ))}
+                </div>
+            )}
+
+            {pagination.next ? (
+                <a href={pagination.next.url} class="btn btn-ghost">
+                    {config.olderText}
+                    <svg
+                        class="h-6 w-6 fill-current md:h-8 md:w-8"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                    >
+                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                    </svg>
+                </a>
+            ) : (
+                <div class="invisible">
+                    <span class="btn btn-ghost invisible">
+                        {config.olderText}
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>
+                    </span>
+                </div>
+            )}
+        </div>
+    )
+}

@@ -1,0 +1,41 @@
+---
+import ContentList from "../../../../components/ContentList.astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { getCollection } from 'astro:content';
+import { sortByDate } from "src/lib/util";
+
+export async function getStaticPaths({ paginate }) {
+  const allProjects = await getCollection("blogs");
+  const allTags = [...new Set(allProjects.flatMap(project => project.data.tags || []))];
+  
+  return allTags.flatMap(tag => {
+    const filteredProjects = sortByDate(allProjects.filter(project => 
+      project.data.tags?.includes(tag)
+    ));
+    
+    return paginate(filteredProjects, {
+      params: { tag },
+      pageSize: 4
+    });
+  });
+}
+
+const { page } = Astro.props;
+const { tag } = Astro.params;
+---
+
+<BaseLayout title={`Blog - ${tag}`}>
+  <ContentList
+    title={`Posts tagged with ${tag}`}
+    items={page.data}
+    contentType="blog"
+    pagination={{
+      prev: page.url.prev ? { url: page.url.prev } : null,
+      next: page.url.next ? { url: page.url.next } : null,
+      currentPage: page.currentPage,
+      totalPages: page.totalPages
+    }}
+    showTagHeader={true}
+    currentTag={tag}
+  />
+</BaseLayout>
